@@ -94,13 +94,16 @@ func initManagerNode(name string, i int) (managerAddress string, managerToken st
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
 	cmd := exec.Command("docker-machine", args...)
-	err := execMulti(cmd, i)
+	_, err := execMulti(cmd, i)
 	if err != nil {
 		writer.Write(i, []byte(err.Error()+"\n"))
 	}
 	writer.Write(i, []byte("done.\n"))
+	writer.Write(i, []byte("\n"))
 	managerAddress = getManagerIP(name, i)
+	writer.Write(i, []byte("\n"))
 	managerToken = getManagerToken(name, i)
+	writer.Write(i, []byte("\n"))
 	workerToken = getWorkerToken(name, i)
 	return
 }
@@ -112,13 +115,17 @@ func getManagerIP(name string, i int) string {
 	args = append(args, name)
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
-	out, err := exec.Command("docker-machine", args...).Output()
+	cmd := exec.Command("docker-machine", args...)
+
+	//out, err := execMulti(cmd, i)
+	out, err := cmd.Output()
 	if err != nil {
-		log.Fatalln(err, "(", out, ")")
+		writer.Write(i, []byte(err.Error()+"\n"))
 		return ""
 	}
 	res := strings.TrimSpace(string(out))
-	writer.Write(i, []byte(fmt.Sprintln("manager ip:", res)))
+	writer.Write(i, []byte(fmt.Sprintln("\tmanager ip:", res)))
+	writer.Write(i, []byte("done.\n"))
 	return res
 }
 
@@ -135,13 +142,17 @@ func getManagerToken(name string, i int) string {
 	args = append(args, "manager")
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
-	out, err := exec.Command("docker-machine", args...).Output()
+	cmd := exec.Command("docker-machine", args...)
+
+	//out, err := execMulti(cmd, i)
+	out, err := cmd.Output()
 	if err != nil {
-		log.Fatalln(err, "(", out, ")")
+		writer.Write(i, []byte(err.Error()+"\n"))
 		return ""
 	}
 	res := strings.TrimSpace(string(out))
-	writer.Write(i, []byte(fmt.Sprintln("manager token:", res)))
+	writer.Write(i, []byte(fmt.Sprintln("\tmanager token:", res)))
+	writer.Write(i, []byte("done.\n"))
 	return res
 }
 
@@ -158,13 +169,17 @@ func getWorkerToken(name string, i int) string {
 	args = append(args, "worker")
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
-	out, err := exec.Command("docker-machine", args...).Output()
+	cmd := exec.Command("docker-machine", args...)
+
+	//out, err := execMulti(cmd, i)
+	out, err := cmd.Output()
 	if err != nil {
-		log.Fatalln(err, "(", out, ")")
+		writer.Write(i, []byte(err.Error()+"\n"))
 		return ""
 	}
 	res := strings.TrimSpace(string(out))
-	writer.Write(i, []byte(fmt.Sprintln("worker token:", res)))
+	writer.Write(i, []byte(fmt.Sprintln("\tworker token:", res)))
+	writer.Write(i, []byte("done.\n"))
 	return res
 }
 
@@ -183,7 +198,7 @@ func joinNode(name string, i int, token string, ip string) {
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
 	cmd := exec.Command("docker-machine", args...)
-	err := execMulti(cmd, i)
+	_, err := execMulti(cmd, i)
 	if err != nil {
 		writer.Write(i, []byte(err.Error()+"\n"))
 	}

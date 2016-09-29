@@ -6,8 +6,8 @@ import (
 	"sync"
 )
 
-func rm(arg *Arg) {
-	writer.Add("remove swarm cluster")
+func leaveSwarm(arg *Arg) {
+	writer.Add("leave swarm")
 	writer.Write(0, []byte(arg.String()))
 	writer.Write(0, []byte("\n"))
 
@@ -16,22 +16,27 @@ func rm(arg *Arg) {
 		index := writer.Add(name)
 		wg.Add(1)
 		go func(name string, index int) {
-			rmNode(name, index)
+			leaveNode(name, index)
 			wg.Done()
 		}(name, index)
 	}
 	wg.Wait()
 }
 
-//execute docker-machine rm
-func rmNode(name string, i int) {
+//execute docker-machine ssh {name} sudo docker swarm leave
+func leaveNode(name string, i int) {
 	args := make([]string, 0)
-	args = append(args, "rm")
-	args = append(args, "-f")
+	args = append(args, "ssh")
 	args = append(args, name)
+	args = append(args, "sudo")
+	args = append(args, "docker")
+	args = append(args, "swarm")
+	args = append(args, "leave")
+	args = append(args, "--force")
+
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
 	cmd := exec.Command("docker-machine", args...)
-	_,err := execMulti(cmd, i)
+	_, err := execMulti(cmd, i)
 	if err != nil {
 		writer.Write(i, []byte(err.Error()+"\n"))
 	}

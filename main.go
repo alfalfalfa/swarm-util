@@ -91,6 +91,12 @@ func main() {
 			return
 		}
 		initSwarm(arg)
+	case "leave":
+		if arg.Name == "" {
+			flag.Usage()
+			return
+		}
+		leaveSwarm(arg)
 	}
 }
 

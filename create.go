@@ -43,7 +43,7 @@ func createNode(name string, options []string, i int) {
 
 	cmd := exec.Command("docker-machine", args...)
 	//cmd := exec.Command("test.sh")
-	err := execMulti(cmd, i)
+	_, err := execMulti(cmd, i)
 	if err != nil {
 		writer.Write(i, []byte(err.Error()+"\n"))
 	}

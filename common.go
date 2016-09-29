@@ -12,19 +12,19 @@ import (
 
 const (
 	managerPrefix = "m"
-	workerPrefix = "w"
+	workerPrefix  = "w"
 )
 
 var writer *cli.MergedLiveWriter
 
-func execMulti(cmd *exec.Cmd, index int) error {
+func execMulti(cmd *exec.Cmd, index int) (string, error) {
 	stdout, stderr, err := cli.ColordChan(cmd)
 	if err != nil {
-		return err
+		return "", err
 	}
 	err = cmd.Start()
 	if err != nil {
-		return err
+		return "", err
 	}
 	out := util.MargeChan(stdout, stderr)
 	go func() {
@@ -39,9 +39,9 @@ func execMulti(cmd *exec.Cmd, index int) error {
 
 	err = cmd.Wait()
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return writer.StringByIndex(index), nil
 }
 
 func getTargetMachineNames(targetName string) []string {

@@ -48,6 +48,13 @@ func (this *MergedLiveWriter) String() string {
 	return all.String()
 }
 
+func (this *MergedLiveWriter) StringByIndex(index int) string {
+	//defer this.mu.Unlock()
+	//this.mu.Lock()
+	buf := this.bufs[index]
+	return buf.String()
+}
+
 func (this *MergedLiveWriter) Write(index int, p []byte) error {
 	defer this.mu.Unlock()
 	this.mu.Lock()
