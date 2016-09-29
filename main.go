@@ -85,6 +85,12 @@ func main() {
 			return
 		}
 		rm(arg)
+	case "init":
+		if arg.Name == "" {
+			flag.Usage()
+			return
+		}
+		initSwarm(arg)
 	}
 }
 
@@ -104,33 +110,4 @@ func (this *Arg) String() string {
 		log.Fatalln(e)
 	}
 	return string(b)
-}
-
-var writer *cli.MergedLiveWriter
-
-func execMulti(cmd *exec.Cmd, index int) error{
-	stdout, stderr, err := cli.ColordChan(cmd)
-	if err != nil {
-		return err
-	}
-	err = cmd.Start()
-	if err != nil {
-		return err
-	}
-	out := util.MargeChan(stdout, stderr)
-	go func() {
-		for {
-			b := <-out
-			if b == nil {
-				return
-			}
-			writer.Write(index, b)
-		}
-	}()
-
-	err = cmd.Wait()
-	if err != nil {
-		return err
-	}
-	return nil
 }

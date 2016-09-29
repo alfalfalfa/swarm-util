@@ -8,15 +8,15 @@ import (
 
 func create(arg *Arg) {
 	writer.Add("create swarm cluster")
-	//writer.Write(0, []byte(arg.String()))
+	writer.Write(0, []byte(arg.String()))
 	writer.Write(0, []byte("\n"))
 	//fmt.Println("create swarm cluster")
 	//fmt.Println(arg.String())
 
 	//create nodes
 	wg := sync.WaitGroup{}
-	createNodes(&wg, arg, "m", arg.Manager)
-	createNodes(&wg, arg, "w", arg.Worker)
+	createNodes(&wg, arg, managerPrefix, arg.Manager)
+	createNodes(&wg, arg, workerPrefix, arg.Worker)
 	wg.Wait()
 }
 
