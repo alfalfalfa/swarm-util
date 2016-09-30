@@ -6,6 +6,8 @@ import (
 	"log"
 	"strings"
 
+	"regexp"
+
 	"github.com/alfalfalfa/swarm-util/cli"
 	"github.com/alfalfalfa/swarm-util/util"
 )
@@ -61,4 +63,22 @@ func getTargetMachineNames(targetName string) []string {
 	}
 
 	return res
+}
+
+func findIpAddressAndPort(str string) string {
+	r := regexp.MustCompile(`(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+`)
+	for _, s := range strings.Split(str, "\n") {
+		if !strings.Contains(s, ".") || !strings.Contains(s, ":") {
+			continue
+		}
+		matches := r.FindAllStringSubmatch(s, -1)
+		if len(matches) == 0 {
+			continue
+		}
+		if len(matches[0]) == 0 {
+			continue
+		}
+		return matches[0][0]
+	}
+	return ""
 }

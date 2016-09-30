@@ -94,13 +94,21 @@ func initManagerNode(name string, i int) (managerAddress string, managerToken st
 
 	writer.Write(i, []byte(fmt.Sprintln("docker-machine", args)))
 	cmd := exec.Command("docker-machine", args...)
-	_, err := execMulti(cmd, i)
+	out, err := execMulti(cmd, i)
 	if err != nil {
 		writer.Write(i, []byte(err.Error()+"\n"))
 	}
+
 	writer.Write(i, []byte("done.\n"))
 	writer.Write(i, []byte("\n"))
-	managerAddress = getManagerIP(name, i)
+
+	//get local ip
+	managerAddress = findIpAddressAndPort(out)
+
+	if managerAddress == "" {
+		//get global ip
+		managerAddress = getManagerIP(name, i)
+	}
 	writer.Write(i, []byte("\n"))
 	managerToken = getManagerToken(name, i)
 	writer.Write(i, []byte("\n"))
